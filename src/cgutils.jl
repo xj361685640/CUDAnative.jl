@@ -137,12 +137,12 @@ function create_llvmf(ret::LLVMType=LLVM.VoidType(jlctx[]),
                       name::String="")
     mod = LLVM.Module("llvmcall", jlctx[])
 
-    llvmf_typ = LLVM.FunctionType(ret, params)
-    llvmf = LLVM.Function(mod, name, llvmf_typ)
-    push!(function_attributes(llvmf), EnumAttribute("alwaysinline"))
-    linkage!(llvmf, LLVM.API.LLVMPrivateLinkage)
+    ft = LLVM.FunctionType(ret, params)
+    f = LLVM.Function(mod, name, ft)
+    push!(function_attributes(f), EnumAttribute("alwaysinline"))
+    linkage!(f, LLVM.API.LLVMPrivateLinkage)
 
-    return llvmf
+    return f, ft
 end
 
 # call an LLVM function, given its return (Julia) type, a tuple-type for the arguments,
