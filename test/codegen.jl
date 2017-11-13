@@ -1,5 +1,47 @@
 @testset "code generation" begin
 
+@testset "inline assembly" begin
+
+# only asm
+
+a1() = CUDAnative.@asm("nop")
+@test a1() == nothing
+
+a2() = CUDAnative.@asm("nop", Void)
+@test a2() == nothing
+
+a3() = CUDAnative.@asm("nop", Void, Tuple{})
+@test a3() == nothing
+
+# asm + constraints
+
+b1() = CUDAnative.@asm("nop", "")
+@test b1() == nothing
+
+b2() = CUDAnative.@asm("nop", "", Void)
+@test b2() == nothing
+
+b3() = CUDAnative.@asm("nop", "", Void, Tuple{})
+@test b3() == nothing
+
+# asm + constraints + side-effects
+
+c1() = CUDAnative.@asm("nop", "", false)
+@test c1() == nothing
+
+c2() = CUDAnative.@asm("nop", "", false, Void)
+@test c2() == nothing
+
+c3() = CUDAnative.@asm("nop", "", false, Void, Tuple{})
+@test c3() == nothing
+
+# arguments
+
+d1(a) = CUDAnative.@asm("bswap \$0", "=r,r", Int32, Tuple{Int32}, a)
+@test d1(Int32(1)) == Int32(16777216)
+
+end
+
 ############################################################################################
 
 @testset "LLVM IR" begin
