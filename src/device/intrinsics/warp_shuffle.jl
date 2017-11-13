@@ -32,10 +32,8 @@ for (name, mode, mask) in (("_up",   :up,   UInt32(0x00)),
 
             @inline $fname_sync(val::UInt32, src::Integer, width::Integer=$ws,
                                 threadmask::UInt32=0xffffffff) =
-                Base.llvmcall(
-                    $"""%5 = call i32 asm sideeffect "$instruction \$0, \$1, \$2, \$3, \$4;", "=r,r,r,r,r"(i32 %0, i32 %1, i32 %2, i32 %3)
-                        ret i32 %5""",
-                    UInt32, NTuple{4,UInt32}, val, src, $pack_expr, threadmask)
+                @asm($"$instruction \$0, \$1, \$2, \$3, \$4", "=r,r,r,r,r", true,
+                     UInt32, NTuple{4,UInt32}, val, src, $pack_expr, threadmask)
 
             @inline $fname(val::UInt32, src::Integer, width::Integer=$ws) =
                 $fname_sync(val, src, width)
